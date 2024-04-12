@@ -5,6 +5,7 @@ import helmet from 'helmet';
 import { errorHanlder } from '@/middleware/error.middleware';
 import { route } from '@/routes';
 import { AppDataSource } from '@/database/db.datasource';
+import { formatResponse } from '@/middleware/format-response.middleware';
 const cors = require('cors')
 const config = require('config');
 const morgan = require('morgan')
@@ -28,6 +29,9 @@ app.use(cors(corsOption))
 if (useHelmet) {
   app.use(helmet());
 }
+
+//Format response
+app.use(formatResponse)
 
 //Route
 route(app, root_api);

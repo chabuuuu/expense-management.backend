@@ -1,4 +1,4 @@
-import { User } from "@/models/user.mode";
+import { User } from "@/models/user.model";
 import { Wallet } from "@/models/wallet.model";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 
@@ -17,12 +17,16 @@ export class User_wallet {
     isAdmin!: boolean;
 
     //FKs:
-    @ManyToOne(() => User, user => user.user_wallets)
+    @ManyToOne(() => User, user => user.user_wallets, {
+        onDelete: 'CASCADE',
+        cascade: true
+    })
     @JoinColumn({name: 'user_id'})
     user!: User;
 
     @ManyToOne(() => Wallet, wallet => wallet.user_wallets, {
-        eager: true
+        eager: true,
+        cascade: true
     })
     @JoinColumn({name: 'wallet_id'})
     wallet!: Wallet;

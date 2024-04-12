@@ -1,4 +1,6 @@
 import { CurrencyUnit } from "@/enums/currency-unit.enum";
+import { Category } from "@/models/category.model";
+import { Transactions } from "@/models/transactions.model";
 import { User_wallet } from "@/models/user_wallet.model";
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 
@@ -33,8 +35,12 @@ export class User {
     currency_unit!: string;
 
     //FKs:
-    @OneToMany(() => User_wallet, user_wallet => user_wallet.user, {
-        onDelete: 'CASCADE'
-    })
+    @OneToMany(() => User_wallet, user_wallet => user_wallet.user)
     user_wallets!: User_wallet[];
+
+    @OneToMany(() => Transactions, transactions => transactions.user)
+    transactions!: Transactions[];
+
+    @OneToMany(()=> Category, category => category.user)
+    categories!: Category[];
 }
