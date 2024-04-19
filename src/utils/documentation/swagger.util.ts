@@ -5,10 +5,10 @@ const options = {
     definition: {
       openapi: "3.1.0",
       info: {
-        title: "Loan service API Documentation",
+        title: "Expense managment API Documentation",
         version: "0.1.0",
         description:
-          "This is Expense managemnt CRUD API application made with Express and documented with Swagger",
+          "This is Expense management API application made with Express and documented with Swagger",
         license: {
           name: "MIT",
           url: "https://spdx.org/licenses/MIT.html",

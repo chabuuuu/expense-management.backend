@@ -74,4 +74,18 @@ export class BaseRepository<T extends any> implements IBaseRepository<T> {
       throw error
     }
   }
+
+  async _exists(params: { where: any }): Promise<boolean> {
+    try {
+      const { where } = params;
+      const result = await this._model.exists({
+        where,
+      });
+      console.log(result);
+      
+      return result;
+    } catch (error) {
+      throw error
+    }
+  }
 }

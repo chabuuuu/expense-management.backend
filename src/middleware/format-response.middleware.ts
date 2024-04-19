@@ -12,10 +12,7 @@ export function formatResponse (req: any, res: any, next: any){
                         code: 200,
                         message: 'Request successful'
                     },
-                    data: {
-                        rows: body,
-                        total: body.length
-                    }
+                    data: body
                 }
         }else{
             body = {

@@ -15,17 +15,17 @@ export class User {
     @Column("varchar", { length: 15, unique: true})
     phone_number!: string;
 
-    @Column("varchar", { length: 50, unique: true})
-    email!: string;
+    // @Column("varchar", { length: 50, unique: true})
+    // email!: string;
 
     @Column("varchar", { length: 100})
     password!: string;
 
-    @Column("varchar", { length: 30})
-    full_name!: string;
+    // @Column("varchar", { length: 30})
+    // full_name!: string;
 
     @Column({default: false})
-    email_verified!: boolean;
+    phone_number_verified!: boolean;
 
     @Column({
         type: "enum",

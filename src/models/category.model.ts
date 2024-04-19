@@ -1,9 +1,10 @@
 import { CategoryType } from "@/enums/category-type.enum";
 import { Budget } from "@/models/budget.model";
 import { User } from "@/models/user.model";
-import { Column, Entity, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity()
+@Index(["name", "user_id", "type"], {unique: true})
 export class Category {
     @PrimaryGeneratedColumn("uuid")
     id!: string;
@@ -23,8 +24,6 @@ export class Category {
 
     @Column()
     user_id!: string;
-
-    @Unique(["name", "user_id", "type"])
 
     //FKs:
     @ManyToOne(() => User, user => user.categories, {
