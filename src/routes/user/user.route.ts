@@ -14,6 +14,7 @@ userRouter
   )
   .put("/:id", userController.update.bind(userController))
   .delete(":/id", userController.delete.bind(userController))
+  .get("/verify-phone-number", userController.verifyPhoneNumber.bind(userController))
   .get("/:id", userController.findOne.bind(userController))
   .get("", userController.findAll.bind(userController));
 

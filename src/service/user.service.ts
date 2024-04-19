@@ -8,6 +8,8 @@ import { generateRandomString } from "@/utils/random/ramdom.generate";
 import redis from "@/utils/redis/redis.instance.util";
 import { RedisSchema } from "@/utils/redis/schema.enum";
 import { sendSms } from "@/utils/sms/sms.send";
+import { plainToInstance } from "class-transformer";
+import { validate } from "class-validator";
 import { StatusCodes } from "http-status-codes";
 import { inject } from "inversify";
 
@@ -15,9 +17,46 @@ export class UserService extends BaseService implements IUserService<any> {
   constructor(@inject(ITYPES.Repository) repository: IUserRepository<any>) {
     super(repository);
   }
-  verifyPhoneNumber(data: any): Promise<any> {
-    throw new Error("Method not implemented.");
+  async verifyPhoneNumber(data: { phone_number: string; verify_token: string; }): Promise<any> {
+    try {
+      const { phone_number, verify_token } = data;
+      console.log(phone_number, verify_token);
+      
+      const nonActiveUser = await redis.get(`${RedisSchema.noneActiveUserData}::${phone_number}`);
+      if (!nonActiveUser) {
+        throw new BaseError(
+          StatusCodes.BAD_REQUEST,
+          "fail",
+          "Cant not verify phone number. Please send otp again!"
+        );
+      }
+      const nonActiveUserObj = JSON.parse(nonActiveUser);
+      if (nonActiveUserObj.verify_token !== verify_token) {
+        throw new BaseError(
+          StatusCodes.BAD_REQUEST,
+          "fail",
+          "Invalid verification code"
+        );
+      }
+      delete nonActiveUserObj.verify_token;
+      const newUserInstance = plainToInstance(UserRegisterDto, nonActiveUserObj);
+      const validateErrors = await validate(newUserInstance, { validationError: { target: false, value: false } })
+      if (validateErrors.length > 0) {
+        const formatError = validateErrors.map((error: any) => (
+            Object.values(error.constraints).join(', ')
+        ))            
+        throw new BaseError(400, 'fail', formatError)
+      }
+      console.log(newUserInstance);
+      
+      const result = await this.repository._create({data: newUserInstance});
+      redis.del(`${RedisSchema.noneActiveUserData}::${phone_number}`);
+      return result;
+    } catch (error) {
+      throw error;
+    }
   }
+
   async register(data: UserRegisterDto): Promise<any> {
     try {
       if (
