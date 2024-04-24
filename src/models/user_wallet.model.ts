@@ -13,7 +13,7 @@ export class User_wallet {
     @CreateDateColumn()
     join_date!: Date;
 
-    @Column({default: false})
+    @Column({default: true})
     isAdmin!: boolean;
 
     //FKs:

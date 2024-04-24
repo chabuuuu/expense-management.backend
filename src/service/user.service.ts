@@ -12,11 +12,50 @@ import { plainToInstance } from "class-transformer";
 import { validate } from "class-validator";
 import { StatusCodes } from "http-status-codes";
 import { inject } from "inversify";
+const jwt = require("jsonwebtoken");
 
 export class UserService extends BaseService implements IUserService<any> {
   constructor(@inject(ITYPES.Repository) repository: IUserRepository<any>) {
     super(repository);
   }
+  async login(phone_number: string, password: string): Promise<any> {
+    try {
+      const user = await this.repository._findOne({
+        where: { phone_number: phone_number },
+      });
+      if (!user)
+        throw new BaseError(
+          StatusCodes.BAD_REQUEST,
+          "fail",
+          "User not found"
+        );
+      if (user.password !== password) {
+        throw new BaseError(
+          StatusCodes.BAD_REQUEST,
+          "fail",
+          "Password is incorrect"
+        );
+      }
+      const token = jwt.sign(
+        {
+          id: user.id,
+          phone_number: user.phone_number,
+          password: user.password,
+        },
+        process.env.JWT_SECRET,
+        { expiresIn: process.env.JWT_EXPIRES_IN }
+      );
+      delete user.password;
+      return {
+        status: "suscess",
+        user: user,
+        token: "Bearer " + token,
+      } as any;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async verifyPhoneNumber(data: { phone_number: string; verify_token: string; }): Promise<any> {
     try {
       const { phone_number, verify_token } = data;
@@ -51,6 +90,9 @@ export class UserService extends BaseService implements IUserService<any> {
       
       const result = await this.repository._create({data: newUserInstance});
       redis.del(`${RedisSchema.noneActiveUserData}::${phone_number}`);
+      
+      
+
       return result;
     } catch (error) {
       throw error;

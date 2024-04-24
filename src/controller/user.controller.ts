@@ -15,6 +15,37 @@ export class UserController extends BaseController implements IUserController<an
         super(service)
         this.userService = service;
     }
+    async update(req: any, res: any, next: any): Promise<any> {
+        try {
+            if (!req.body) throw new Error("Update data is required");
+            const user = req.user;
+            const data = req.body;
+            if (data.hasOwnProperty('username')) {
+                const existsUsername = await this.service.findOne({ where: { username: data.username } });
+                if (existsUsername){
+                    throw new BaseError(StatusCodes.BAD_REQUEST, 'fail', 'Username is exists')
+                }
+            }
+            const result = await this.service.update({ where: { id: user.id }, data });
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
+    async getProfile(req: any, res: any, next: any): Promise<any> {
+        try {
+            const result = await this.service.findOne({where: {id: req.user.id}});
+            if (!result) {
+                throw new BaseError(StatusCodes.NOT_FOUND, 'fail', 'User not found')
+            }
+            if (result.hasOwnProperty('password')) {
+                delete result.password;
+            }
+            res.json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
     async verifyPhoneNumber(req: any, res: any, next: any): Promise<any> {
         try {
             let {phone_number, verify_token} = req.query;
@@ -30,7 +61,14 @@ export class UserController extends BaseController implements IUserController<an
 
     }
     async login(req: any, res: any, next: any): Promise<any> {
-        throw new Error("Method not implemented.");
+        try {
+            const phone_number = req.body.phone_number;
+            const password = req.body.password;
+            const result = await this.service.login(phone_number, password);
+            res.json(result);
+          } catch (error) {
+            next(error);
+          }
     }
     async register(req: any, res: any, next: any): Promise<any> {
         try {

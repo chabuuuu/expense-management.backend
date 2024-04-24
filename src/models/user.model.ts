@@ -24,8 +24,8 @@ export class User {
     // @Column("varchar", { length: 30})
     // full_name!: string;
 
-    @Column({default: false})
-    phone_number_verified!: boolean;
+    // @Column({default: false})
+    // phone_number_verified!: boolean;
 
     @Column({
         type: "enum",
@@ -35,12 +35,18 @@ export class User {
     currency_unit!: string;
 
     //FKs:
-    @OneToMany(() => User_wallet, user_wallet => user_wallet.user)
+    @OneToMany(() => User_wallet, user_wallet => user_wallet.user, {
+        eager: true
+    })
     user_wallets!: User_wallet[];
 
-    @OneToMany(() => Transactions, transactions => transactions.user)
+    @OneToMany(() => Transactions, transactions => transactions.user, {
+        eager: true
+    })
     transactions!: Transactions[];
 
-    @OneToMany(()=> Category, category => category.user)
+    @OneToMany(()=> Category, category => category.user, {
+        eager: true
+    })
     categories!: Category[];
 }
