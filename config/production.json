@@ -1,4 +1,8 @@
 {
+    "server": {
+        "port":  4000,
+        "host": "https://airlane-management-backend.onrender.com"
+    },
     "helmet": true,
     "enviroment": "production",
     "cors": {
