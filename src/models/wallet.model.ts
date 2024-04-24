@@ -9,10 +9,10 @@ export class Wallet{
     @PrimaryGeneratedColumn("uuid")
     id!: string;
 
-    @Column()
+    @Column({default: "Default wallet"})
     name!: string;
 
-    @Column("decimal", {precision: 30, scale: 0})
+    @Column("decimal", {precision: 30, scale: 0, default: 0})
     amount!: number;
 
     @Column({

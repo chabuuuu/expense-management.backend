@@ -1,8 +1,11 @@
 import { UserRegisterDto } from "@/dto/user/user-register.dto";
+import { Wallet } from "@/models/wallet.model";
 import { IUserRepository } from "@/repository/interface/i.user.repository";
 import { BaseService } from "@/service/base/base.service";
 import { IUserService } from "@/service/interface/i.user.service";
+import { IWalletService } from "@/service/interface/i.wallet.service";
 import { ITYPES } from "@/types/interface.types";
+import { SERVICE_TYPES } from "@/types/service.types";
 import BaseError from "@/utils/error/base.error";
 import { generateRandomString } from "@/utils/random/ramdom.generate";
 import redis from "@/utils/redis/redis.instance.util";
@@ -15,8 +18,12 @@ import { inject } from "inversify";
 const jwt = require("jsonwebtoken");
 
 export class UserService extends BaseService implements IUserService<any> {
-  constructor(@inject(ITYPES.Repository) repository: IUserRepository<any>) {
+  private walletService: IWalletService<any>;
+  constructor(@inject(ITYPES.Repository) repository: IUserRepository<any>, 
+    @inject(SERVICE_TYPES.Wallet) walletService: IWalletService<any>
+) {
     super(repository);
+    this.walletService = walletService;
   }
   async login(phone_number: string, password: string): Promise<any> {
     try {
@@ -91,7 +98,7 @@ export class UserService extends BaseService implements IUserService<any> {
       const result = await this.repository._create({data: newUserInstance});
       redis.del(`${RedisSchema.noneActiveUserData}::${phone_number}`);
       
-      
+      await this.walletService.createWalletForUser(result.id, {data: null});
 
       return result;
     } catch (error) {
