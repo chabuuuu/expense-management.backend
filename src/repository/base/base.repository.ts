@@ -51,15 +51,19 @@ export class BaseRepository<T extends any> implements IBaseRepository<T> {
     take?: number;
     where?: any;
     order?: any;
+    relations?: any;
+    select?: any;
   }): Promise<any> {
     try {
-      const { skip, take, where, order } = params;
+      const { skip, take, where, order, relations, select } = params;
 
       return this._model.find({
         skip,
         take,
         where,
         order,
+        relations, 
+        select
       })
     } catch (error) {
       throw error

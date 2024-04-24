@@ -26,7 +26,8 @@ export class User_wallet {
 
     @ManyToOne(() => Wallet, wallet => wallet.user_wallets, {
         eager: true,
-        cascade: true
+        cascade: true,
+        onDelete: 'CASCADE'
     })
     @JoinColumn({name: 'wallet_id'})
     wallet!: Wallet;
