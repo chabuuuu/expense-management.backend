@@ -1,5 +1,6 @@
 import { CurrencyUnit } from "@/enums/currency-unit.enum";
 import { TransactionType } from "@/enums/transaction-type.enum";
+import { Category } from "@/models/category.model";
 import { User } from "@/models/user.model";
 import { Wallet } from "@/models/wallet.model";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
@@ -61,4 +62,8 @@ export class Transactions {
     })
     @JoinColumn({name: 'target_wallet_id'})
     target_wallet!: Wallet;
+
+    @ManyToOne(() => Category, category => category.transactions)
+    @JoinColumn({name: 'category_id'})
+    category!: Category;
 }

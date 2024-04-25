@@ -40,6 +40,6 @@ export class Wallet{
     @OneToMany(() => Transactions, transactions => transactions.wallet)
     transactions_transafer_in!: Transactions[];
 
-    @OneToMany(()=> Budget, budget => budget.wallet)
-    budgets!: Budget[];
+    // @OneToMany(()=> Budget, budget => budget.wallet)
+    // budgets!: Budget[];
 }

@@ -1,5 +1,6 @@
 import { CategoryType } from "@/enums/category-type.enum";
 import { Budget } from "@/models/budget.model";
+import { Transactions } from "@/models/transactions.model";
 import { User } from "@/models/user.model";
 import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
 
@@ -34,4 +35,7 @@ export class Category {
 
     @OneToMany(()=> Budget, budget => budget.category)
     budgets!: Budget[];
+
+    @OneToMany(()=> Transactions, transaction => transaction.category)
+    transactions!: Transactions[];
 }   

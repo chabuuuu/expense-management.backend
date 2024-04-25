@@ -1,4 +1,5 @@
 import accountRouter from "@/routes/account/account.route";
+import budgetRouter from "@/routes/budget/budget.route";
 import categoryRouter from "@/routes/category/category.route";
 import roleRouter from "@/routes/role/role.route";
 import userRouter from "@/routes/user/user.route";
@@ -11,6 +12,7 @@ export function route (app : any, root_api: string){
     app.use(`${root_api}/category`, categoryRouter);
     app.use(`${root_api}/user`, userRouter);
     app.use(`${root_api}/wallet`, walletRouter);
+    app.use(`${root_api}/budget`, budgetRouter);
     app.all('*', (req: any, res: any, next: any) => {
         const status = 'fail';
         const statusCode = 404;
