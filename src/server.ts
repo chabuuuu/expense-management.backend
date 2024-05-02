@@ -4,7 +4,7 @@ import "reflect-metadata"
 import helmet from 'helmet';
 import { errorHanlder } from '@/middleware/error.middleware';
 import { route } from '@/routes';
-import { AppDataSource } from '@/database/db.datasource';
+import { AppDataSource, dbFirstStartQuery } from '@/database/db.datasource';
 import { formatResponse } from '@/middleware/format-response.middleware';
 import { swaggerInit } from '@/utils/documentation/swagger.util';
 const cors = require('cors')
@@ -52,6 +52,7 @@ AppDataSource
   .initialize()
   .then(async () => {
     console.log('Database is connected');
+    await dbFirstStartQuery();
     const port = server_config.port || 3000;  
     app.listen(port, () => {
       console.log(`Server is running on http://localhost:${port} in ${enviroment} mode`)

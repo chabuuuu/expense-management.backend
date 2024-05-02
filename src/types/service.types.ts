@@ -3,6 +3,7 @@ const SERVICE_TYPES = {
     Role: Symbol.for("Role"),
     Wallet: Symbol.for("Wallet"),
     User: Symbol.for("User"),
+    Category: Symbol.for("Category"),
 };
 
 export { SERVICE_TYPES };

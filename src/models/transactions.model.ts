@@ -3,6 +3,7 @@ import { TransactionType } from "@/enums/transaction-type.enum";
 import { Category } from "@/models/category.model";
 import { User } from "@/models/user.model";
 import { Wallet } from "@/models/wallet.model";
+import moment from "moment-timezone";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
@@ -28,7 +29,14 @@ export class Transactions {
     @Column("text", {nullable: true})
     picture?: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({type: "datetime", transformer: {
+        to: (value: Date) => value,
+        from: (value: string) => {
+            const raw = moment(value)
+            const vn = raw.clone().tz('Asia/Ho_Chi_Minh');
+            return vn.format("YYYY-MM-DD HH:mm:ss");
+        }
+    }})
     transaction_date!: Date;
 
     @Column({
