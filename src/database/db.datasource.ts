@@ -18,3 +18,11 @@ export const AppDataSource = new DataSource({
     logging: false,
     migrations: [__dirname + "/migrations/*.js"],
 })
+
+export async function dbFirstStartQuery() {
+    const manager = AppDataSource.manager;
+
+    await manager.query(`SET GLOBAL time_zone = '+07:00';`)
+    await manager.query(`SET time_zone = '+07:00';`)
+}
+

@@ -36,11 +36,14 @@ export class BaseRepository<T extends any> implements IBaseRepository<T> {
     }
 
   }
-  async _findOne(params: { where?: any }): Promise<any> {
+  async _findOne(params: { where?: any, order?: any, relations?: any, select?: any }): Promise<any> {
     try {
-      const { where } = params;
+      const { where, order, relations, select } = params;
       return await this._model.findOne({
         where,
+        order,
+        relations,
+        select,
       });
     } catch (error) {
       throw error

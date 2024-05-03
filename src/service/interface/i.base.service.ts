@@ -4,4 +4,5 @@ export interface IBaseService<T> {
     delete(params: any): Promise<T>;
     findOne(params: any): Promise<T>;
     findAll(params: any): Promise<any>;
+    exists(params: { where: any }): Promise<boolean>;
 }

@@ -7,6 +7,9 @@ export class BaseService implements IBaseService<any>{
     public constructor(repository: any) {
         this.repository = repository;
     }
+    async exists(params: { where: any; }): Promise<boolean> {
+        return await this.repository._exists(params);
+    }
     async create(data: any): Promise<any> {        
         return await this.repository._create(data);
     }
