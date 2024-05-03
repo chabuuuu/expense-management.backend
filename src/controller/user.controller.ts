@@ -46,12 +46,13 @@ export class UserController
     try {
       const result = await this.service.findOne({
         where: { id: req.user.id },
-        relations: {
-            transactions: {
-                orderBy: {
-                    transaction_date: 'DESC'
-                }
-            },
+        order: {
+          transactions: {
+            transaction_date: "DESC",
+          },
+          user_wallets: {
+            join_date: "DESC",
+          }
         }
       });
       console.log('result', typeof result.transactions[0].transaction_date);

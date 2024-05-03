@@ -1,4 +1,5 @@
 import { CurrencyUnit } from "@/enums/currency-unit.enum";
+import { Budget } from "@/models/budget.model";
 import { Category } from "@/models/category.model";
 import { Transactions } from "@/models/transactions.model";
 import { User_wallet } from "@/models/user_wallet.model";
@@ -49,4 +50,7 @@ export class User {
         eager: true
     })
     categories!: Category[];
+
+    @OneToMany(()=> Budget, budget => budget.user)
+    budgets!: Budget[];
 }

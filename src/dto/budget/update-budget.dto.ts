@@ -1,13 +1,13 @@
 import { CronType } from "@/enums/cron-type.enum";
 import { Type } from "class-transformer";
-import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";
+import { IsDateString, IsEnum, IsNumber, IsOptional, IsString, Min } from "class-validator";
 
-export class CreateBudgetDto {
-    @IsNotEmpty()
+export class UpdateBudgetDto {
+    @IsOptional()
     @IsString()
     category_id!: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @Type(() => Number)
     @IsNumber()
     @Min(0)
@@ -21,5 +21,9 @@ export class CreateBudgetDto {
     @IsDateString()
     cron_start?: Date;
 
-    user_id?: string;
+    @IsOptional()
+    @Type(() => Number)
+    @IsNumber()
+    @Min(0)
+    expensed_amount!: number;
 }

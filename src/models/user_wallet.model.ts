@@ -1,5 +1,6 @@
 import { User } from "@/models/user.model";
 import { Wallet } from "@/models/wallet.model";
+import moment from "moment-timezone";
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryColumn } from "typeorm";
 
 @Entity()
@@ -10,7 +11,16 @@ export class User_wallet {
     @PrimaryColumn()
     wallet_id!: string;
 
-    @CreateDateColumn()
+    @CreateDateColumn({
+        transformer: {
+            to: (value: Date) => value,
+            from: (value: string) => {
+                const raw = moment(value)
+                const vn = raw.clone().tz('Asia/Ho_Chi_Minh');
+                return vn.format("YYYY-MM-DD HH:mm:ss");
+            }
+        }
+    })
     join_date!: Date;
 
     @Column({default: true})

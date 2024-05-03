@@ -2,7 +2,7 @@ import { CategoryType } from "@/enums/category-type.enum";
 import { Budget } from "@/models/budget.model";
 import { Transactions } from "@/models/transactions.model";
 import { User } from "@/models/user.model";
-import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, PrimaryGeneratedColumn, Unique } from "typeorm";
+import { Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, OneToOne, PrimaryGeneratedColumn, Unique } from "typeorm";
 
 @Entity()
 @Index(["name", "user_id", "type"], {unique: true})
@@ -33,8 +33,8 @@ export class Category {
     @JoinColumn({name: 'user_id'})
     user!: User;
 
-    @OneToMany(()=> Budget, budget => budget.category)
-    budgets!: Budget[];
+    @OneToOne(()=> Budget, budget => budget.category)
+    budget!: Budget;
 
     @OneToMany(()=> Transactions, transaction => transaction.category)
     transactions!: Transactions[];
