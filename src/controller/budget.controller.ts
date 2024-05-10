@@ -46,10 +46,13 @@ export class BudgetController
           if (!checkValidDay) throw new BaseError(400, "fail", "Invalid day format: need DD-MM-YYYY format");
           break;
         case BudgetNoRenewUnit.WEEK:
-          let startDate = data.no_renew_date.split("-")[0];
-          let endDate = data.no_renew_date.split("-")[1];
+          let startDate = data.no_renew_date.split(" ")[0];
+          let endDate = data.no_renew_date.split(" ")[1];
           let checkValidWeek = moment(startDate, "DD-MM-YYYY").isValid() && moment(endDate, "DD-MM-YYYY").isValid();
-          if (!checkValidWeek) throw new BaseError(400, "fail", "Invalid week format: need DD-MM-YYYY-DD-MM-YYYY format");
+          if (!checkValidWeek) throw new BaseError(400, "fail", "Invalid week format: need DD-MM-YYYY DD-MM-YYYY format");
+          if (moment(startDate, "DD-MM-YYYY").isAfter(moment())){
+            data.is_active = false;
+          }
           break;
         case BudgetNoRenewUnit.MONTH:
           let checkValidMonth = moment(data.no_renew_date, "MM-YYYY").isValid();
@@ -60,12 +63,15 @@ export class BudgetController
           if (!checkValidYear) throw new BaseError(400, "fail", "Invalid year format: need YYYY format");
           break;
         case BudgetNoRenewUnit.TIME_SPAN:
-          let startDateTS = data.no_renew_date.split("-")[0];
-          let endDateTS = data.no_renew_date.split("-")[1];
+          let startDateTS = data.no_renew_date.split(" ")[0];
+          let endDateTS = data.no_renew_date.split(" ")[1];
           let checkValidTS = moment(startDateTS, "DD-MM-YYYY").isValid() && moment(endDateTS, "DD-MM-YYYY").isValid();
-          if (!checkValidTS) throw new BaseError(400, "fail", "Invalid time span format: need DD-MM-YYYY-DD-MM-YYYY format");
+          if (!checkValidTS) throw new BaseError(400, "fail", "Invalid time span format: need DD-MM-YYYY DD-MM-YYYY format");
+          if (moment(startDateTS, "DD-MM-YYYY").isAfter(moment())){
+            data.is_active = false;
+          }
           break;
-      }
+      }      
       const result = await this.service.create({ data });
       res.json(result);
     } catch (error) {

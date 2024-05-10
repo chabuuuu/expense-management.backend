@@ -46,16 +46,8 @@ export class Budget {
     no_renew_date_unit?: string;
 
 
-    @Column({nullable: true,        
-        transformer: {
-        to: (value: Date) => value,
-        from: (value: string) => {
-            const raw = moment(value)
-            const vn = raw.clone().tz('Asia/Ho_Chi_Minh');
-            return vn.format("YYYY-MM-DD HH:mm:ss");
-        }
-    }})
-    no_renew_date?: Date;
+    @Column({nullable: true})
+    no_renew_date?: string;
 
     @Column(
         {
@@ -81,6 +73,8 @@ export class Budget {
     @Column({default: true})
     is_active!: boolean;
 
+    @Column({default: false})
+    enable_notification!: boolean;
 
     // @Column({nullable: true})
     // cron?: string;
