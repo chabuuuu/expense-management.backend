@@ -1,3 +1,6 @@
+import { BudgetNoRenewUnit } from "@/enums/budget-no-renew-unit.enum";
+import { BudgetRenewUnit } from "@/enums/budget-renew-unit.enum";
+import { BudgetType } from "@/enums/budget-type.enum";
 import { CurrencyUnit } from "@/enums/currency-unit.enum";
 import { Category } from "@/models/category.model";
 import { User } from "@/models/user.model";
@@ -30,11 +33,60 @@ export class Budget {
     })
     currency_unit!: string;
     
-    @Column({nullable: true})
-    cron?: string;
+    @Column({type: "enum", enum: BudgetType, default: BudgetType.NO_RENEW})
+    budget_type!: string;
 
-    @Column({nullable: true})
-    cron_start?: Date;
+    @Column(
+        {
+            type: "enum",
+            enum: BudgetNoRenewUnit,
+            nullable: true
+        }
+    )
+    no_renew_date_unit?: string;
+
+
+    @Column({nullable: true,        
+        transformer: {
+        to: (value: Date) => value,
+        from: (value: string) => {
+            const raw = moment(value)
+            const vn = raw.clone().tz('Asia/Ho_Chi_Minh');
+            return vn.format("YYYY-MM-DD HH:mm:ss");
+        }
+    }})
+    no_renew_date?: Date;
+
+    @Column(
+        {
+            type: "enum",
+            enum: BudgetRenewUnit,
+            nullable: true
+        }
+    )
+    renew_date_unit?: string;
+
+
+    @Column({nullable: true,         
+        transformer: {
+        to: (value: Date) => value,
+        from: (value: string) => {
+            const raw = moment(value)
+            const vn = raw.clone().tz('Asia/Ho_Chi_Minh');
+            return vn.format("YYYY-MM-DD HH:mm:ss");
+        }
+    }})
+    custom_renew_date?: Date;
+
+    @Column({default: true})
+    is_active!: boolean;
+
+
+    // @Column({nullable: true})
+    // cron?: string;
+
+    // @Column({nullable: true})
+    // cron_start?: Date;
 
     @CreateDateColumn({
         transformer: {
@@ -49,7 +101,7 @@ export class Budget {
     create_at!: Date;
 
     //FKs:
-    @OneToOne(()=> Category, category => category.budget, {
+    @ManyToOne(()=> Category, category => category.budgets, {
         onDelete: 'CASCADE',
     })
     @JoinColumn({name: 'category_id'})
