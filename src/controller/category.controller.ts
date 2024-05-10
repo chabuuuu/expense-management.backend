@@ -1,5 +1,6 @@
 import { BaseController } from "@/controller/base/base.controller";
 import { IBaseController } from "@/controller/interface/i.base.controller";
+import { CreateCategoryDto } from "@/dto/category/create-category.dto";
 import { ICategoryService } from "@/service/interface/i.category.service";
 import { ITYPES } from "@/types/interface.types";
 import BaseError from "@/utils/error/base.error";
@@ -15,7 +16,9 @@ export class CategoryController extends BaseController implements IBaseControlle
     async create(req: any, res: any, next: any): Promise<any> {
         try {
             if (!req.body) throw new Error("Data is required");
-            const data = req.body;
+            const data : CreateCategoryDto = req.body;
+            const user_id = req.user.id;
+            data.user_id = user_id;
             const result = await this.service.create({data});
             res.json(result);
         } catch (error: any) {

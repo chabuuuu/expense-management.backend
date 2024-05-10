@@ -1,13 +1,18 @@
 import { BaseController } from "@/controller/base/base.controller";
 import { IBudgetController } from "@/controller/interface/i.budget.controller";
 import { CreateBudgetDto } from "@/dto/budget/create-budget.dto";
+import { CreateNoRenewBudgetDto } from "@/dto/budget/create-no-renew-budget.dto";
+import { CreateRenewBudgetDto } from "@/dto/budget/create-renew-budget.dto";
 import { UpdateBudgetDto } from "@/dto/budget/update-budget.dto";
+import { BudgetNoRenewUnit } from "@/enums/budget-no-renew-unit.enum";
+import { BudgetRenewUnit } from "@/enums/budget-renew-unit.enum";
 import { CronType } from "@/enums/cron-type.enum";
 import { IBudgetService } from "@/service/interface/i.budget.service";
 import { ITYPES } from "@/types/interface.types";
 import { convertToCron } from "@/utils/cron/text-to-cron-convert.util";
 import BaseError from "@/utils/error/base.error";
 import { inject, injectable } from "inversify";
+import moment from "moment";
 
 @injectable()
 export class BudgetController
@@ -19,33 +24,109 @@ export class BudgetController
     super(service);
     this.budgetService = service;
   }
-  async create(req: any, res: any, next: any): Promise<any> {
+
+
+  async createNoRenewBudget(req: any, res: any, next: any): Promise<any> {
     try {
       if (!req.body) throw new Error("Data is required");
-      let data: CreateBudgetDto = req.body;
+      let data: CreateNoRenewBudgetDto = req.body;
       const category_id = data.category_id;
       const user_id = req.user.id;
       data.user_id = user_id;
-      if (await this.budgetService.exists({ where: { category_id } })) {
+      if (await this.budgetService.exists({ where: { category_id: category_id, is_active: true } })) {
         throw new BaseError(
           400,
           "fail",
-          "Budget already exists on this category. Please delete it first"
+          "Budget currently active is already exists on this category. Please delete it first"
         );
       }
-      if (data.cron) {
-        if (data.cron === CronType.Custom) {
-          if (!data.cron_start)
-            throw new BaseError(400, "fail", "Cron start date is required");
-        }
+      switch(data.no_renew_date_unit){
+        case BudgetNoRenewUnit.DAY:
+          let checkValidDay = moment(data.no_renew_date, "DD-MM-YYYY").isValid();
+          if (!checkValidDay) throw new BaseError(400, "fail", "Invalid day format: need DD-MM-YYYY format");
+          break;
+        case BudgetNoRenewUnit.WEEK:
+          let startDate = data.no_renew_date.split("-")[0];
+          let endDate = data.no_renew_date.split("-")[1];
+          let checkValidWeek = moment(startDate, "DD-MM-YYYY").isValid() && moment(endDate, "DD-MM-YYYY").isValid();
+          if (!checkValidWeek) throw new BaseError(400, "fail", "Invalid week format: need DD-MM-YYYY-DD-MM-YYYY format");
+          break;
+        case BudgetNoRenewUnit.MONTH:
+          let checkValidMonth = moment(data.no_renew_date, "MM-YYYY").isValid();
+          if (!checkValidMonth) throw new BaseError(400, "fail", "Invalid month format: need MM-YYYY format");
+          break;
+        case BudgetNoRenewUnit.YEAR:
+          let checkValidYear = moment(data.no_renew_date, "YYYY").isValid();
+          if (!checkValidYear) throw new BaseError(400, "fail", "Invalid year format: need YYYY format");
+          break;
+        case BudgetNoRenewUnit.TIME_SPAN:
+          let startDateTS = data.no_renew_date.split("-")[0];
+          let endDateTS = data.no_renew_date.split("-")[1];
+          let checkValidTS = moment(startDateTS, "DD-MM-YYYY").isValid() && moment(endDateTS, "DD-MM-YYYY").isValid();
+          if (!checkValidTS) throw new BaseError(400, "fail", "Invalid time span format: need DD-MM-YYYY-DD-MM-YYYY format");
+          break;
       }
-      console.log(data.cron);
       const result = await this.service.create({ data });
       res.json(result);
     } catch (error) {
       next(error);
     }
   }
+
+
+  async createRenewBudget(req: any, res: any, next: any): Promise<any> {
+    try {
+      if (!req.body) throw new Error("Data is required");
+      let data: CreateRenewBudgetDto = req.body;
+      const category_id = data.category_id;
+      const user_id = req.user.id;
+      data.user_id = user_id;
+      if (await this.budgetService.exists({ where: { category_id: category_id, is_active: true } })) {
+        throw new BaseError(
+          400,
+          "fail",
+          "Budget currently active is already exists on this category. Please delete it first"
+        );
+      }
+        if (data.renew_date_unit === BudgetRenewUnit.Custom) {
+          if (!data.custom_renew_date)
+            throw new BaseError(400, "fail", "Custom renew date is required");
+        }
+      const result = await this.service.create({ data });
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+
+  // async create(req: any, res: any, next: any): Promise<any> {
+  //   try {
+  //     if (!req.body) throw new Error("Data is required");
+  //     let data: CreateBudgetDto = req.body;
+  //     const category_id = data.category_id;
+  //     const user_id = req.user.id;
+  //     data.user_id = user_id;
+  //     // if (await this.budgetService.exists({ where: { category_id } })) {
+  //     //   throw new BaseError(
+  //     //     400,
+  //     //     "fail",
+  //     //     "Budget already exists on this category. Please delete it first"
+  //     //   );
+  //     // }
+  //     if (data.cron) {
+  //       if (data.cron === CronType.Custom) {
+  //         if (!data.cron_start)
+  //           throw new BaseError(400, "fail", "Cron start date is required");
+  //       }
+  //     }
+  //     console.log(data.cron);
+  //     const result = await this.service.create({ data });
+  //     res.json(result);
+  //   } catch (error) {
+  //     next(error);
+  //   }
+  // }
   async findAllBudgetOfMe(req: any, res: any, next: any): Promise<any> {
     try {
       const user_id = req.user.id;

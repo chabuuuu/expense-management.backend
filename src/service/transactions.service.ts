@@ -65,19 +65,23 @@ export class TransactionsService
           if (thisWallet.amount < expenseAmount) {
             throw new BaseError(400, "fail", "Not enough money in wallet");
           }
-          if (thisCategory.budget) {
-            const expensedBudget = Number(thisCategory.budget.expensed_amount);
-            const limitBudget = Number(thisCategory.budget.limit_amount);
-            if (expensedBudget + expenseAmount > limitBudget) {
-              throw new BaseError(400, "fail", "Budget limit exceeded");
-            }
-            let newExpensedBudget = expensedBudget + expenseAmount;
-            const budgetId = thisCategory.budget.id;
-            await this.budgetService.update({
-              where: { id: budgetId },
-              data: { expensed_amount: newExpensedBudget  },
-            });
-          }
+
+//Fix lại phần này
+          // if (thisCategory.budget) {
+          //   const expensedBudget = Number(thisCategory.budget.expensed_amount);
+          //   const limitBudget = Number(thisCategory.budget.limit_amount);
+          //   if (expensedBudget + expenseAmount > limitBudget) {
+          //     throw new BaseError(400, "fail", "Budget limit exceeded");
+          //   }
+          //   let newExpensedBudget = expensedBudget + expenseAmount;
+          //   const budgetId = thisCategory.budget.id;
+          //   await this.budgetService.update({
+          //     where: { id: budgetId },
+          //     data: { expensed_amount: newExpensedBudget  },
+          //   });
+          // }
+
+
           newWalletAmount = Number(thisWallet.amount) - Number(expenseAmount);
           await this.walletService.update({
             where: {id: thisWallet.id},

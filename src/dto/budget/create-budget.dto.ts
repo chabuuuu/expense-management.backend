@@ -1,3 +1,4 @@
+import { BudgetType } from "@/enums/budget-type.enum";
 import { CronType } from "@/enums/cron-type.enum";
 import { Type } from "class-transformer";
 import { IsDateString, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Min } from "class-validator";

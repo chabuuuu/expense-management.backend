@@ -17,7 +17,7 @@ export class CreateCategoryDto  {
     @IsEnum(CategoryType)
     type!: string;
 
-    @IsNotEmpty()
-    @IsString()
-    user_id!: string;
+    // @IsNotEmpty()
+    // @IsString()
+    user_id?: string;
 }

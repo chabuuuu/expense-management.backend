@@ -33,8 +33,8 @@ export class Category {
     @JoinColumn({name: 'user_id'})
     user!: User;
 
-    @OneToOne(()=> Budget, budget => budget.category)
-    budget!: Budget;
+    @OneToMany(()=> Budget, budget => budget.category)
+    budgets!: Budget[];
 
     @OneToMany(()=> Transactions, transaction => transaction.category)
     transactions!: Transactions[];
