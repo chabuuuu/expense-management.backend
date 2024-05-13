@@ -9,6 +9,7 @@ import { classValidateUtil } from "@/utils/class-validate/class-validate.util";
 import BaseError from "@/utils/error/base.error";
 import { StatusCodes } from "http-status-codes";
 import { inject, injectable } from "inversify";
+import moment from "moment";
 
 @injectable()
 export class TransactionsController
@@ -79,6 +80,13 @@ export class TransactionsController
       const userId = user.id;
       const data: CreateTransactionsDto = req.body;
       data.user_id = userId;
+      if (data.transaction_date){
+        if (moment(data.transaction_date).isAfter(moment())){
+          throw new BaseError(StatusCodes.BAD_REQUEST, "fail", "Transaction date must not be in future!");
+        }
+      }
+      console.log('data', data);
+      
       const result = await this.transactionService.createMyTransactions({ data });
       res.json(result);
     } catch (error) {
