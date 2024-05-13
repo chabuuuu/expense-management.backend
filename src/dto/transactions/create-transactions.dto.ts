@@ -11,7 +11,7 @@ export class CreateTransactionsDto{
     @IsNumber()
     amount!: number;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsString()
     category_id!: string;
 
@@ -24,6 +24,9 @@ export class CreateTransactionsDto{
 
     @IsOptional()
     picture?: string | undefined;
+
+    @IsOptional()
+    transaction_date?: Date | undefined;
 
     @IsOptional()
     @IsEnum(TransactionType)

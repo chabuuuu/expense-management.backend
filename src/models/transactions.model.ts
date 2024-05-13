@@ -17,8 +17,8 @@ export class Transactions {
     @Column("decimal", {precision: 30, scale: 0})
     amount!: number;
 
-    @Column()
-    category_id!: string;
+    @Column({nullable: true})
+    category_id?: string;
 
     @Column()
     wallet_id!: string;
@@ -73,5 +73,5 @@ export class Transactions {
 
     @ManyToOne(() => Category, category => category.transactions)
     @JoinColumn({name: 'category_id'})
-    category!: Category;
+    category?: Category;
 }

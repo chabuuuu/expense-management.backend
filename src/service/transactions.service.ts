@@ -42,16 +42,22 @@ export class TransactionsService
       const thisWallet = await this.walletService.findOne({
         where: { id: data.wallet_id },
       });
+      if (!thisWallet) {
+        throw new BaseError(400, "fail", "Wallet not found");
+      }
       let newWalletAmount = thisWallet.amount;
-      const thisCategory = await this.categoryService.findOne({
-        where: { id: data.category_id },
-        relations: {
-          budget: true,
-        },
-        select: {
-          budget: true,
-        }
-      });
+      let thisCategory!: Category;
+      if (data.transaction_type !== TransactionType.TRANSFER){
+        thisCategory = await this.categoryService.findOne({
+          where: { id: data.category_id },
+          relations: {
+            budgets: true,
+          },
+          select: {
+            budgets: true,
+          }
+        });
+      }
       //console.log("thisCategory", thisCategory);
       
       switch (data.transaction_type) {
@@ -66,7 +72,7 @@ export class TransactionsService
             throw new BaseError(400, "fail", "Not enough money in wallet");
           }
 
-//Fix lại phần này
+//Fix lại phần này cho xử lý xem nếu có budget thì kiểm tra xem đã vượt quá budget chưa
           // if (thisCategory.budget) {
           //   const expensedBudget = Number(thisCategory.budget.expensed_amount);
           //   const limitBudget = Number(thisCategory.budget.limit_amount);
@@ -126,16 +132,20 @@ export class TransactionsService
             throw new BaseError(400, "fail", "Not enough money in wallet");
           }
           newWalletAmount = Number(thisWallet.amount) - Number(data.amount);
+
+          //Cập nhật lại số tiền trong ví của tôi
           await this.walletService.update({
             where: {id: thisWallet.id},
             data: { amount: newWalletAmount },
           });
+
+          //Cập nhật lại số tiền trong ví của đối tác
           const newTargetWalletAmount = Number(targetWallet.amount) + Number(data.amount);
           await this.walletService.update({
             where: {id: targetWallet.id},
             data: { amount: newTargetWalletAmount },
           });
-          return await this.transactionsRepository._create(data);
+          return await this.transactionsRepository._create({data});
           break;
       }
     } catch (error) {
