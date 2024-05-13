@@ -25,6 +25,22 @@ export class UserService extends BaseService implements IUserService<any> {
     super(repository);
     this.walletService = walletService;
   }
+  async changePassword(userId: string, data: {
+    old_password: string; new_password: string;
+  }): Promise<any> {
+    const { old_password, new_password } = data;
+    const user = await this.repository._findOne({ where: { id: userId } });
+    if (!user) {
+      throw new BaseError(StatusCodes.BAD_REQUEST, "fail", "User not found");
+    }    
+    if (user.password !== old_password) {
+      throw new BaseError(StatusCodes.BAD_REQUEST, "fail", "Old password is incorrect");
+    }
+    return this.repository._update({
+      where: { id: userId },
+      data: { password: new_password },
+    });
+  }
   async login(phone_number: string, password: string): Promise<any> {
     try {
       const user = await this.repository._findOne({
