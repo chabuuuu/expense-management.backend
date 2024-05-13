@@ -1,4 +1,5 @@
 import { userController } from "@/container/user.container";
+import { ChangePasswordDto } from "@/dto/user/change-password.dto";
 import { UserLoginDto } from "@/dto/user/user-login.dto";
 import { UserModifyDto } from "@/dto/user/user-modify.dto";
 import { UserRegisterDto } from "@/dto/user/user-register.dto";
@@ -15,6 +16,7 @@ userRouter
     classValidate(UserRegisterDto),
     userController.register.bind(userController)
   )
+  .put("/change-password", classValidate(ChangePasswordDto), authenticateJWT, userController.changePassword.bind(userController))
   .put("/profile", classValidate(UserModifyDto), authenticateJWT, userController.update.bind(userController))
   .delete(":/id", userController.delete.bind(userController))
   .get("/verify-phone-number", userController.verifyPhoneNumber.bind(userController))

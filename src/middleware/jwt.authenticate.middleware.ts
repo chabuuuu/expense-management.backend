@@ -31,9 +31,9 @@ export async function authenticateJWT(req: any, res: any, next: any) {
           if (!findedUser) {
             throw new BaseError(StatusCodes.NOT_FOUND, 'fail', 'User not found')
           }
-          if (findedUser.password != user.password) {
-            throw new BaseError(StatusCodes.BAD_REQUEST, 'fail', 'Password is incorrect')
-          }
+          // if (findedUser.password != user.password) {
+          //   throw new BaseError(StatusCodes.BAD_REQUEST, 'fail', 'Password is incorrect')
+          // }
           console.log('User login:::', findedUser);
           req.user = findedUser;
           next();

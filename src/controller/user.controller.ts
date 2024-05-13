@@ -1,5 +1,6 @@
 import { BaseController } from "@/controller/base/base.controller";
 import { IUserController } from "@/controller/interface/i.user.controller";
+import { ChangePasswordDto } from "@/dto/user/change-password.dto";
 import { UserRegisterDto } from "@/dto/user/user-register.dto";
 import { IUserService } from "@/service/interface/i.user.service";
 import { ITYPES } from "@/types/interface.types";
@@ -15,6 +16,22 @@ export class UserController
   constructor(@inject(ITYPES.Service) service: IUserService<any>) {
     super(service);
     this.userService = service;
+  }
+  async changePhoneNumer(req: any, res: any, next: any): Promise<any> {
+    try {
+    } catch (error) {
+      next(error);
+    }
+  }
+  async changePassword(req: any, res: any, next: any): Promise<any> {
+    try{
+      const user = req.user;
+      const data : ChangePasswordDto = req.body;
+      const result = await this.service.changePassword(user.id, data);
+      res.json(result);
+    }catch(error){
+      next(error)
+    }
   }
   async update(req: any, res: any, next: any): Promise<any> {
     try {
