@@ -25,6 +25,9 @@ export class UserService extends BaseService implements IUserService<any> {
     super(repository);
     this.walletService = walletService;
   }
+  async updateDeviceToken(userId: string, deviceToken: string): Promise<any> {
+    return this.repository.updateDeviceToken(userId, deviceToken);
+  }
   async changePassword(userId: string, data: {
     old_password: string; new_password: string;
   }): Promise<any> {
