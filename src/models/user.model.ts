@@ -22,6 +22,9 @@ export class User {
     @Column("varchar", { length: 100})
     password!: string;
 
+    @Column("text", {nullable: true})
+    deviceToken?: string;
+
     // @Column("varchar", { length: 30})
     // full_name!: string;
 

@@ -1,6 +1,7 @@
 import { BaseController } from "@/controller/base/base.controller";
 import { IUserController } from "@/controller/interface/i.user.controller";
 import { ChangePasswordDto } from "@/dto/user/change-password.dto";
+import { UpdateDeviceTokenDto } from "@/dto/user/update-device-token.dto";
 import { UserRegisterDto } from "@/dto/user/user-register.dto";
 import { IUserService } from "@/service/interface/i.user.service";
 import { ITYPES } from "@/types/interface.types";
@@ -119,6 +120,17 @@ export class UserController
     try {
       const data: UserRegisterDto = req.body;
       const result = await this.userService.register(data);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+  async updateDeviceToken(req: any, res: any, next: any): Promise<any> {
+    try {
+      const user = req.user;
+      const data : UpdateDeviceTokenDto = req.body;
+      const deviceToken = data.deviceToken;
+      const result = await this.service.updateDeviceToken(user.id, deviceToken);
       res.json(result);
     } catch (error) {
       next(error);
