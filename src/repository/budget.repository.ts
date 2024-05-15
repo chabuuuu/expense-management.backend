@@ -9,4 +9,18 @@ export class BudgetRepository extends BaseRepository<Budget> implements IBudgetR
     constructor(@inject(ITYPES.Datasource) dataSource : DataSource){
         super(dataSource.getRepository(Budget))
     }
+
+    async disableBudget(budgetId: string): Promise<any> {
+        return await this._update({
+            where: { id: budgetId },
+            data: { is_active: false }
+        });
+    }
+
+    async enableBudget(budgetId: string): Promise<any> {
+        return await this._update({
+            where: { id: budgetId },
+            data: { is_active: true }
+        });
+    }
 }

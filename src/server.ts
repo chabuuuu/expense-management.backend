@@ -7,6 +7,7 @@ import { route } from '@/routes';
 import { AppDataSource, dbFirstStartQuery } from '@/database/db.datasource';
 import { formatResponse } from '@/middleware/format-response.middleware';
 import { swaggerInit } from '@/utils/documentation/swagger.util';
+import { workerService } from '@/container/worker.container';
 const cors = require('cors')
 const config = require('config');
 const morgan = require('morgan')
@@ -37,6 +38,9 @@ const swagger_config = config.get('swagger');
 if (swagger_config.enable){
   swaggerInit(app, root_api, server_config.port || 3000)
 }
+
+//Worker init
+workerService.init();
 
 //Format response
 app.use(formatResponse)

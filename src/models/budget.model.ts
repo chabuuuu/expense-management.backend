@@ -16,8 +16,6 @@ export class Budget {
     @Column()
     category_id!: string;
 
-    // @Column()
-    // wallet_id!: string;
 
     @Column("decimal", {precision: 30, scale: 0})
     limit_amount!: number;
@@ -33,9 +31,21 @@ export class Budget {
     })
     currency_unit!: string;
     
+    /*
+    Nếu là NO_RENEW thì:
+    - no_renew_date_unit: WEEK/MONTH/YEAR
+    - no_renew_date: ví dụ, là WEEK thì sẽ là "13/05/2024-19/05/2024"
+    
+    Nếu là RENEW thì:
+    - renew_date_unit: WEEK/MONTH/YEAR
+    - custom_renew_date: ngày/tháng/năm
+    */
+    
     @Column({type: "enum", enum: BudgetType, default: BudgetType.NO_RENEW})
     budget_type!: string;
 
+
+    //NO RENEW
     @Column(
         {
             type: "enum",
@@ -49,6 +59,8 @@ export class Budget {
     @Column({nullable: true})
     no_renew_date?: string;
 
+
+    //RENEW
     @Column(
         {
             type: "enum",
@@ -68,19 +80,17 @@ export class Budget {
             return vn.format("YYYY-MM-DD HH:mm:ss");
         }
     }})
+
+    //Sẽ có giá trị khi ewnew_date_unit là CUSTOM
     custom_renew_date?: Date;
 
+    //Budget hiện tại có đang active hay không
     @Column({default: true})
     is_active!: boolean;
 
     @Column({default: false})
     enable_notification!: boolean;
 
-    // @Column({nullable: true})
-    // cron?: string;
-
-    // @Column({nullable: true})
-    // cron_start?: Date;
 
     @CreateDateColumn({
         transformer: {
@@ -112,8 +122,4 @@ export class Budget {
     @JoinColumn({name: 'user_id'})
     user!: User;
 
-    // @ManyToOne(()=> Wallet, wallet => wallet.budgets, {
-    //     onDelete: 'CASCADE'
-    // })
-    // wallet!: Wallet;
 }

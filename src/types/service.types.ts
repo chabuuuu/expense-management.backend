@@ -7,6 +7,7 @@ const SERVICE_TYPES = {
     User: Symbol.for("User"),
     Category: Symbol.for("Category"),
     Budget: Symbol.for("Budget"),
+    Notification: Symbol.for("Notification"),
 };
 
 export { SERVICE_TYPES };

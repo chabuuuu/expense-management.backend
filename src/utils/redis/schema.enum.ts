@@ -1,4 +1,5 @@
 export enum RedisSchema {
     verifyPhoneToken = "verifyPhoneToken",
-    noneActiveUserData = "noneActiveUserData"
+    noneActiveUserData = "noneActiveUserData",
+    notification = "notification",
 }
