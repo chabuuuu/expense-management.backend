@@ -19,6 +19,20 @@ export class NotificationService implements INotificationService{
     ){
         this.userRepository = userRepository;
     }
+    async getNotificationList(userId: string): Promise<any> {
+        const notifications = await redis.keys(`${RedisSchema.notification}::${userId}?*`);
+        const notificationList = await Promise.all(notifications.map(async (key) => {
+            const value : any = await redis.get(key);
+            return JSON.parse(value);
+        }));
+        console.log('notification list:', notificationList);
+        console.log(Number(moment('16-05-2024 00:18:48', "DD-MM-YYYY HH:mm:ss").unix()));
+        
+        const sortedNotificationList = 
+        notificationList.sort((a, b) => 
+            Number(moment(b.date, "DD-MM-YYYY HH:mm:ss").unix()) - Number(moment(a.date, "DD-MM-YYYY HH:mm:ss").unix())); //Sort by date
+        return sortedNotificationList;
+    }
 
     //Firebase function to send notification to mobile device
     async sendNotificationToDeviceToken(deviceToken: string, notification: Notification): Promise<any> {     
