@@ -1,7 +1,8 @@
 {
     "server": {
         "port":  3001,
-        "host": "localhost"
+        "host": "localhost",
+        "media_root": "http://localhost:3001"
     },
     "request-limit": {
         "limit": "100kb"

@@ -1,6 +1,7 @@
 import accountRouter from "@/routes/account/account.route";
 import budgetRouter from "@/routes/budget/budget.route";
 import categoryRouter from "@/routes/category/category.route";
+import mediaRouter from "@/routes/media/media.route";
 import notificationRouter from "@/routes/notification/notification.route";
 import roleRouter from "@/routes/role/role.route";
 import transactionsRouter from "@/routes/transactions/transactions.route";
@@ -17,6 +18,7 @@ export function route (app : any, root_api: string){
     app.use(`${root_api}/budget`, budgetRouter);
     app.use(`${root_api}/transactions`, transactionsRouter);
     app.use(`${root_api}/notification`, notificationRouter);
+    app.use(`${root_api}/media`, mediaRouter);
     app.all('*', (req: any, res: any, next: any) => {
         const status = 'fail';
         const statusCode = 404;
