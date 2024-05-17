@@ -13,10 +13,12 @@ const budgetContainer = new Container();
 
 budgetContainer.bind<IBudgetService<any>>(ITYPES.Service).to(BudgetService);
 budgetContainer.bind<IBudgetController<any>>(ITYPES.Controller).to(BudgetController);
-budgetContainer.bind<IBudgetRepository<Budget>>(ITYPES.Repository).to(BudgetRepository);
 budgetContainer.bind(ITYPES.Datasource).toConstantValue(AppDataSource);
+budgetContainer.bind<IBudgetRepository<Budget>>(ITYPES.Repository).to(BudgetRepository);
+
 
 const budgetController = budgetContainer.get<IBudgetController<any>>(ITYPES.Controller);
 const budgetService = budgetContainer.get<IBudgetService<any>>(ITYPES.Service);
+const budgetRepository = budgetContainer.get<IBudgetRepository<Budget>>(ITYPES.Repository);
 
-export {budgetController, budgetService}
+export {budgetController, budgetService, budgetRepository}

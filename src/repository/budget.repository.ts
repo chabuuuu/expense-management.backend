@@ -9,4 +9,35 @@ export class BudgetRepository extends BaseRepository<Budget> implements IBudgetR
     constructor(@inject(ITYPES.Datasource) dataSource : DataSource){
         super(dataSource.getRepository(Budget))
     }
+
+    //Refresh budget amount
+    async refreshBudgetAmount(id: string): Promise<any> {
+        const budget = await this._findOne({ where: { id: id } });
+        if (!budget) {
+            throw new Error("Budget not found");
+        }
+
+        const limit_amount = budget.limit_amount;
+
+        return await this._update({
+            where: { id: id },
+            data: {
+                expensed_amount: Number(limit_amount)
+            }
+        })
+    }
+
+    async disableBudget(budgetId: string): Promise<any> {
+        return await this._update({
+            where: { id: budgetId },
+            data: { is_active: false }
+        });
+    }
+
+    async enableBudget(budgetId: string): Promise<any> {
+        return await this._update({
+            where: { id: budgetId },
+            data: { is_active: true }
+        });
+    }
 }

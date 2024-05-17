@@ -26,5 +26,6 @@ userContainer.bind<IWalletService<any>>(SERVICE_TYPES.Wallet).toConstantValue(wa
 
 const userController = userContainer.get<IUserController<any>>(ITYPES.Controller);
 const userService = userContainer.get<IUserService<any>>(ITYPES.Service);
+const userRepository = userContainer.get<IUserRepository<User>>(ITYPES.Repository);
 
-export { userController, userService };
+export { userController, userService, userRepository };
