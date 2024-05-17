@@ -105,8 +105,9 @@ export class Budget {
     create_at!: Date;
 
     //FKs:
-    @ManyToOne(()=> Category, category => category.budgets, {
+    @OneToOne(()=> Category, category => category.budget, {
         onDelete: 'CASCADE',
+        eager: true
     })
     @JoinColumn({name: 'category_id'})
     category!: Category;

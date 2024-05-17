@@ -51,11 +51,14 @@ export class NotificationService implements INotificationService{
         }
         const deviceToken = user.deviceToken;
         if (!deviceToken) {
-            throw new Error("Device token not found");
+            console.log(`User ${userId} has no device token`);
+            return;
+            
         }
         const notification: Notification = {
             title: "Notification",
-            body: message
+            body: message,
+            imageUrl: "https://happay.com/blog/wp-content/uploads/sites/12/2022/08/what-is-expense-management.png"
         }
         this.sendNotificationToDeviceToken(deviceToken!, notification);
         console.log(`Notification sent to user ${userId} successfully`);
