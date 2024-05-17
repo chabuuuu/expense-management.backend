@@ -27,4 +27,5 @@ export class CreateRenewBudgetDto {
     enable_notification!: boolean;
 
     user_id?: string;
+    budget_type?: string;
 }

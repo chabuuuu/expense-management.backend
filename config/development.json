@@ -7,7 +7,7 @@
         "methods": ["GET", "POST", "PUT", "DELETE", "UPDATE"],
         "allowedHeaders": ["X-Requested-With", "X-HTTP-Method-Override", "Content-Type", "Accept", "Observe", "Authorization"]
     },
-    "helmet": true,
+    "helmet": false,
     "enviroment": "development",
     "swagger": {
         "enable": true

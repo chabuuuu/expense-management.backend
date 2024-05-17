@@ -1,5 +1,5 @@
 import { almostExpireDays } from "@/constants/almostExpireDays.constant";
-import { OneHourInMs } from "@/constants/time.constant";
+import { OneHourInMs, OneMinuteInMs } from "@/constants/time.constant";
 import { BudgetNoRenewUnit } from "@/enums/budget-no-renew-unit.enum";
 import { BudgetRenewUnit } from "@/enums/budget-renew-unit.enum";
 import { BudgetType } from "@/enums/budget-type.enum";
@@ -9,6 +9,7 @@ import { INotificationService } from "@/service/interface/i.notification.service
 import { IWorkerService } from "@/service/interface/i.worker.service";
 import { REPOSITORY_TYPES } from "@/types/repository.types";
 import { SERVICE_TYPES } from "@/types/service.types";
+import { log } from "console";
 import { inject, injectable } from "inversify";
 import moment from "moment";
 
@@ -27,15 +28,18 @@ export class WorkerService implements IWorkerService {
   }
 
   async init() {
-    // this.cronCheckExpiredBugets();
-    // this.cronCheckAlmostExpiredBugets();
-    // this.cronCheckStartedBudgets();
+    this.cronCheckExpiredBugets();
+    this.cronCheckAlmostExpiredBugets();
+    this.cronCheckStartedBudgets();
+    this.cronRefreshBudgetAmount();
     console.log("Worker service is ready");
   }
 
   //Check expired budgets every hour and disable it + send notification
   async cronCheckExpiredBugets() {
     setInterval(async () => {
+      console.log("Checking expired budgets every hour");
+      
       //Step 1: Get all budgets
       const budgets: Budget[] = await this.budgetRepository._findAll({});
 
@@ -70,6 +74,7 @@ export class WorkerService implements IWorkerService {
   //Check if the budget is started, use for no renew budget
   async cronCheckStartedBudgets(): Promise<any> {
     setInterval(async () => {
+      log("Checking started budgets every hour");
       //Step 1: Get all budgets
       const budgets: Budget[] = await this.budgetRepository._findAll({});
 
@@ -96,6 +101,8 @@ export class WorkerService implements IWorkerService {
   //Check almost expired budgets every hour and send notification
   async cronCheckAlmostExpiredBugets() {
     setInterval(async () => {
+      console.log("Checking almost expired budgets every hour");
+      
       //Step 1: Get all budgets
       const budgets: Budget[] = await this.budgetRepository._findAll({});
 
@@ -131,6 +138,8 @@ export class WorkerService implements IWorkerService {
 
   async cronRefreshBudgetAmount(): Promise<any> {
     setInterval(async () => {
+      console.log("Refreshing budget amount every minute");
+      
       //Step 1: Get all budgets
       const budgets: Budget[] = await this.budgetRepository._findAll({});
 
@@ -147,9 +156,15 @@ export class WorkerService implements IWorkerService {
         }
 
         //Refresh budget amount if in plan
-
-        const refreshUnit = budget.renew_date_unit;
         const expect_refresh_date = budget.custom_renew_date;
+
+        console.log("Expect refresh date: ", expect_refresh_date);
+        console.log('is same or after: ', moment().isSameOrAfter(expect_refresh_date));
+        
+
+        if (!expect_refresh_date) {
+          continue;
+        }
 
         //Nếu có custom_renew_date thì xét tới custom_renew_date
         //Tính toán ngày hết hạn mới dựa vào custom_renew_date và lưu vào custom_renew_date
@@ -173,12 +188,14 @@ export class WorkerService implements IWorkerService {
               budget.custom_renew_date = moment().add(1, "years").toDate();
               await this.budgetRepository.refreshBudgetRenewDate(budget.id, budget.custom_renew_date);
               break;
+            case BudgetRenewUnit.Custom:
+              await this.budgetRepository.refreshBudgetRenewDate(budget.id, null);
             default:
               break;
           }
         }
       }
-    }, OneHourInMs);
+    }, OneMinuteInMs);
   }
 
   //Searching and disable budget if it is expired, return true if the budget is expired
