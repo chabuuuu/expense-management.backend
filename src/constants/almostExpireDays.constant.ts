@@ -1,1 +1,1 @@
-const almostExpireDays = 3;
+export const almostExpireDays = 3;
