@@ -9,7 +9,7 @@ export class BudgetRepository extends BaseRepository<Budget> implements IBudgetR
     constructor(@inject(ITYPES.Datasource) dataSource : DataSource){
         super(dataSource.getRepository(Budget))
     }
-    async refreshBudgetRenewDate(id: string, date: Date): Promise<any> {
+    async refreshBudgetRenewDate(id: string, date: Date | null): Promise<any> {        
         return await this._update({
             where: { id: id },
             data: {
@@ -25,12 +25,10 @@ export class BudgetRepository extends BaseRepository<Budget> implements IBudgetR
             throw new Error("Budget not found");
         }
 
-        const limit_amount = budget.limit_amount;
-
         return await this._update({
             where: { id: id },
             data: {
-                expensed_amount: Number(limit_amount)
+                expensed_amount: 0
             }
         })
     }

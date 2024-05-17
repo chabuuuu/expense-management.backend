@@ -38,27 +38,36 @@ export class TransactionsService
   }
   async createMyTransactions(payload: any): Promise<any> {
     try {
+
+      //New transaction payload:
       const data: CreateTransactionsDto = payload.data;
+
+      //Find wallet of the transaction
       const thisWallet = await this.walletService.findOne({
         where: { id: data.wallet_id },
       });
       if (!thisWallet) {
         throw new BaseError(400, "fail", "Wallet not found");
       }
+
+      //Temporary new wallet amount
       let newWalletAmount = thisWallet.amount;
       let thisCategory!: Category;
+
+      //If transaction type is not transfer, find category of the transaction
+      //Because transfer transaction doesn't have category
       if (data.transaction_type !== TransactionType.TRANSFER){
         thisCategory = await this.categoryService.findOne({
           where: { id: data.category_id },
           relations: {
-            budgets: true,
+            budget: true,
           },
           select: {
-            budgets: true,
+            budget: true,
           }
         });
       }
-      //console.log("thisCategory", thisCategory);
+      console.log("thisCategory", thisCategory);
       
       switch (data.transaction_type) {
 
@@ -72,27 +81,29 @@ export class TransactionsService
             throw new BaseError(400, "fail", "Not enough money in wallet");
           }
 
-//Fix lại phần này cho xử lý xem nếu có budget thì kiểm tra xem đã vượt quá budget chưa
-          // if (thisCategory.budget) {
-          //   const expensedBudget = Number(thisCategory.budget.expensed_amount);
-          //   const limitBudget = Number(thisCategory.budget.limit_amount);
-          //   if (expensedBudget + expenseAmount > limitBudget) {
-          //     throw new BaseError(400, "fail", "Budget limit exceeded");
-          //   }
-          //   let newExpensedBudget = expensedBudget + expenseAmount;
-          //   const budgetId = thisCategory.budget.id;
-          //   await this.budgetService.update({
-          //     where: { id: budgetId },
-          //     data: { expensed_amount: newExpensedBudget  },
-          //   });
-          // }
+          //Check if budget limit is exceeded
+          if (thisCategory.budget && thisCategory.budget.is_active) {
+            const expensedBudget = Number(thisCategory.budget.expensed_amount);
+            const limitBudget = Number(thisCategory.budget.limit_amount);
+            if (expensedBudget + expenseAmount > limitBudget) {
+              throw new BaseError(400, "fail", "Budget limit exceeded");
+            }
+            let newExpensedBudget = expensedBudget + expenseAmount;
+            const budgetId = thisCategory.budget.id;
+            await this.budgetService.update({
+              where: { id: budgetId },
+              data: { expensed_amount: newExpensedBudget  },
+            });
+          }
 
-
+          //Update wallet amount
           newWalletAmount = Number(thisWallet.amount) - Number(expenseAmount);
           await this.walletService.update({
             where: {id: thisWallet.id},
             data: { amount: newWalletAmount },
           });
+
+          //Insert new transaction
           return await this.transactionsRepository._create({ data });
           break;
 
@@ -101,6 +112,8 @@ export class TransactionsService
           if (thisCategory.type !== TransactionType.INCOME) {
             throw new BaseError(400, "fail", "Category is not income type");
           }
+
+          //Update wallet amount
           newWalletAmount = Number(thisWallet.amount) + Number(data.amount);
           console.log("newWalletAmount", newWalletAmount);
           
@@ -125,12 +138,16 @@ export class TransactionsService
               "Cannot transfer to the same wallet"
             );
           }
+
+          //Find target wallet
           const targetWallet = await this.walletService.findOne({
             where: { id: data.target_wallet_id },
           });
           if (thisWallet.amount < data.amount) {
             throw new BaseError(400, "fail", "Not enough money in wallet");
           }
+
+          //Update wallet amount
           newWalletAmount = Number(thisWallet.amount) - Number(data.amount);
 
           //Cập nhật lại số tiền trong ví của tôi

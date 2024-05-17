@@ -6,6 +6,7 @@ import { CreateRenewBudgetDto } from "@/dto/budget/create-renew-budget.dto";
 import { UpdateBudgetDto } from "@/dto/budget/update-budget.dto";
 import { BudgetNoRenewUnit } from "@/enums/budget-no-renew-unit.enum";
 import { BudgetRenewUnit } from "@/enums/budget-renew-unit.enum";
+import { BudgetType } from "@/enums/budget-type.enum";
 import { CronType } from "@/enums/cron-type.enum";
 import { IBudgetService } from "@/service/interface/i.budget.service";
 import { ITYPES } from "@/types/interface.types";
@@ -114,7 +115,7 @@ export class BudgetController
           default:
             break;
         }
-      
+      data.budget_type = BudgetType.RENEW;
       const result = await this.service.create({ data });
       res.json(result);
     } catch (error) {
