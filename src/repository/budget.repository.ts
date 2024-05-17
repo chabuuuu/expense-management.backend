@@ -9,6 +9,14 @@ export class BudgetRepository extends BaseRepository<Budget> implements IBudgetR
     constructor(@inject(ITYPES.Datasource) dataSource : DataSource){
         super(dataSource.getRepository(Budget))
     }
+    async refreshBudgetRenewDate(id: string, date: Date): Promise<any> {
+        return await this._update({
+            where: { id: id },
+            data: {
+                custom_renew_date: date
+            }
+        })
+    }
 
     //Refresh budget amount
     async refreshBudgetAmount(id: string): Promise<any> {

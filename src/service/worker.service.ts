@@ -1,6 +1,7 @@
 import { almostExpireDays } from "@/constants/almostExpireDays.constant";
 import { OneHourInMs } from "@/constants/time.constant";
 import { BudgetNoRenewUnit } from "@/enums/budget-no-renew-unit.enum";
+import { BudgetRenewUnit } from "@/enums/budget-renew-unit.enum";
 import { BudgetType } from "@/enums/budget-type.enum";
 import { Budget } from "@/models/budget.model";
 import { IBudgetRepository } from "@/repository/interface/i.budget.repository";
@@ -146,7 +147,36 @@ export class WorkerService implements IWorkerService {
         }
 
         //Refresh budget amount if in plan
-        await this.budgetRepository.refreshBudgetAmount(budget.id);
+
+        const refreshUnit = budget.renew_date_unit;
+        const expect_refresh_date = budget.custom_renew_date;
+
+        //Nếu có custom_renew_date thì xét tới custom_renew_date
+        //Tính toán ngày hết hạn mới dựa vào custom_renew_date và lưu vào custom_renew_date
+        
+        if (moment().isSameOrAfter(expect_refresh_date)) {
+          await this.budgetRepository.refreshBudgetAmount(budget.id);
+          switch (budget.renew_date_unit) {
+            case BudgetRenewUnit.Daily:
+              budget.custom_renew_date = moment().add(1, "days").toDate();
+              await this.budgetRepository.refreshBudgetRenewDate(budget.id, budget.custom_renew_date);
+              break;
+            case BudgetRenewUnit.Monthly:
+              budget.custom_renew_date = moment().add(1, "months").toDate();
+              await this.budgetRepository.refreshBudgetRenewDate(budget.id, budget.custom_renew_date);
+              break;
+            case BudgetRenewUnit.Weekly:
+              budget.custom_renew_date = moment().add(1, "weeks").toDate();
+              await this.budgetRepository.refreshBudgetRenewDate(budget.id, budget.custom_renew_date);
+              break;
+            case BudgetRenewUnit.Yearly:
+              budget.custom_renew_date = moment().add(1, "years").toDate();
+              await this.budgetRepository.refreshBudgetRenewDate(budget.id, budget.custom_renew_date);
+              break;
+            default:
+              break;
+          }
+        }
       }
     }, OneHourInMs);
   }
