@@ -14,7 +14,7 @@ export async function authenticateJWT(req: any, res: any, next: any) {
       if (token != null){
         token = token.split('Bearer ')[1];
       }
-    console.log(token);
+    //console.log(token);
       await jwt.verify(
         token,
         process.env.JWT_SECRET,
@@ -34,7 +34,7 @@ export async function authenticateJWT(req: any, res: any, next: any) {
           // if (findedUser.password != user.password) {
           //   throw new BaseError(StatusCodes.BAD_REQUEST, 'fail', 'Password is incorrect')
           // }
-          console.log('User login:::', findedUser);
+          //console.log('User login:::', findedUser);
           req.user = findedUser;
           next();
         },
