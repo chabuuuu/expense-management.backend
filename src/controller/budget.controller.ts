@@ -94,10 +94,27 @@ export class BudgetController
           "Budget currently active is already exists on this category. Please delete it first"
         );
       }
-        if (data.renew_date_unit === BudgetRenewUnit.Custom) {
-          if (!data.custom_renew_date)
-            throw new BaseError(400, "fail", "Custom renew date is required");
+        switch (data.renew_date_unit) {
+          case BudgetRenewUnit.Daily:
+            data.custom_renew_date = moment().add(1, "days").toDate();
+            break;
+          case BudgetRenewUnit.Monthly:
+            data.custom_renew_date = moment().add(1, "months").toDate();
+            break;
+          case BudgetRenewUnit.Weekly:
+            data.custom_renew_date = moment().add(1, "weeks").toDate();
+            break;
+          case BudgetRenewUnit.Yearly:
+            data.custom_renew_date = moment().add(1, "years").toDate();
+            break;
+          case BudgetRenewUnit.Custom:
+            if (!data.custom_renew_date)
+              throw new BaseError(400, "fail", "Custom renew date is required");
+            break;
+          default:
+            break;
         }
+      
       const result = await this.service.create({ data });
       res.json(result);
     } catch (error) {
