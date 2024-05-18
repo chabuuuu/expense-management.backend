@@ -32,6 +32,11 @@ if (useHelmet) {
   app.use(helmet());
 }
 
+//Disable console.log
+if (enviroment === 'production') {
+  console.log = function() {}
+}
+
 //Swagger init
 const swagger_config = config.get('swagger');
 
