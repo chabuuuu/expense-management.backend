@@ -1,5 +1,5 @@
 import { almostExpireDays } from "@/constants/almostExpireDays.constant";
-import { OneHourInMs, OneMinuteInMs } from "@/constants/time.constant";
+import { FifteenMinutesInMs, OneHourInMs, OneMinuteInMs } from "@/constants/time.constant";
 import { BudgetNoRenewUnit } from "@/enums/budget-no-renew-unit.enum";
 import { BudgetRenewUnit } from "@/enums/budget-renew-unit.enum";
 import { BudgetType } from "@/enums/budget-type.enum";
@@ -31,7 +31,7 @@ export class WorkerService implements IWorkerService {
     this.cronCheckExpiredBugets(OneHourInMs);
     this.cronCheckAlmostExpiredBugets(OneHourInMs);
     this.cronCheckStartedBudgets(OneHourInMs);
-    this.cronRefreshBudgetAmount(OneMinuteInMs);
+    this.cronRefreshBudgetAmount(FifteenMinutesInMs);
     console.log("Worker service is ready");
   }
 
