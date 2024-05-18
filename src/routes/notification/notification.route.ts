@@ -7,5 +7,5 @@ const notificationRouter = express.Router();
 notificationRouter
 
 .get('/list', authenticateJWT, notificationController.getNotificationList.bind(notificationController))
-
+.delete('/', authenticateJWT, notificationController.deleteNotification.bind(notificationController))
 export default notificationRouter;

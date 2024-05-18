@@ -11,6 +11,22 @@ export class NotificationController implements INotificationController{
     ){
         this.notifiationService = notificationService;
     }
+    async deleteNotification(req: any, res: any, next: any): Promise<any> {
+        try {
+            const notificaitionId = req.body.notificationId;
+            if (!notificaitionId) {
+                throw new Error("Notification id not found");
+            }
+            console.log("notificaitionId:", notificaitionId);
+            
+            await this.notifiationService.deleteNotification(notificaitionId);
+            res.json({
+                message: "Delete notification successfully"
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 
     async getNotificationList(req: any, res: any, next: any): Promise<any>{
         try {
