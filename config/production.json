@@ -1,8 +1,8 @@
 {
     "server": {
         "port":  4000,
-        "host": "https://airlane-management-backend.onrender.com",
-        "media_root": "https://expense-management-backend-jslp.onrender.com"
+        "host": "https://expense-management-backend-2tac.onrender.com",
+        "media_root": "https://expense-management-backend-2tac.onrender.com"
 
     },
     "helmet": true,
