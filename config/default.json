@@ -18,5 +18,6 @@
     "API_VERSION": "/api/v1",
     "swagger": {
         "enable": true
-    }
+    },
+    "currency_exchange_server": "https://open.er-api.com/v6/latest"
 }
