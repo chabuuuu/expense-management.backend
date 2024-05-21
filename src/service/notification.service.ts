@@ -8,7 +8,7 @@ import firebaseInstance from "@/utils/firebase/firebase.instance";
 import redis from "@/utils/redis/redis.instance.util";
 import { RedisSchema } from "@/utils/redis/schema.enum";
 import moment from "moment";
-import { SevenDaysInSec } from "@/constants/time.constant";
+import { SevenDaysInSec, ThreeDaysInSec } from "@/constants/time.constant";
 
 
 @injectable()
@@ -66,6 +66,6 @@ export class NotificationService implements INotificationService{
         this.sendNotificationToDeviceToken(deviceToken!, notification);
         console.log(`Notification sent to user ${userId} successfully`);
         const now = moment().format("DD-MM-YYYY HH:mm:ss");
-        redis.set(`${RedisSchema.notification}::${userId}?time=${now}`, JSON.stringify({notification, date: now}), "EX", SevenDaysInSec);
+        redis.set(`${RedisSchema.notification}::${userId}?time=${now}`, JSON.stringify({notification, date: now}), "EX", ThreeDaysInSec);
     }
 }
