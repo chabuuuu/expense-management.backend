@@ -98,9 +98,7 @@ export class UserController
             join_date: "DESC",
           }
         }
-      });
-      console.log('result', typeof result.transactions[0].transaction_date);
-      
+      });      
       if (!result) {
         throw new BaseError(StatusCodes.NOT_FOUND, "fail", "User not found");
       }
