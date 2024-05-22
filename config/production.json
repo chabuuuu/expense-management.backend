@@ -1,8 +1,8 @@
 {
     "server": {
-        "port":  4000,
-        "host": "https://expense-management-backend-2tac.onrender.com",
-        "media_root": "https://expense-management-backend-2tac.onrender.com"
+        "port":  80,
+        "host": "http://13.215.179.128",
+        "media_root": "http://13.215.179.128"
 
     },
     "helmet": true,

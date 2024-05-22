@@ -33,7 +33,7 @@ export class WorkerService implements IWorkerService {
   }
 
   async init() {
-    this.cronCheckExpiredBugets(OneHourInMs);
+    this.cronCheckExpiredBugets(FifteenMinutesInMs);
 
     //Waiting for 1 minutes before start next cron job
     await new Promise(resolve => setTimeout(resolve, OneMinuteInMs));
