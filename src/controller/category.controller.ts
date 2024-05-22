@@ -13,6 +13,20 @@ export class CategoryController extends BaseController implements IBaseControlle
     ) {
         super(service)
     }
+    async findAll(req: any, res: any, next: any): Promise<any> {
+        try {
+            const user_id = req.user.id;
+            const result = await this.service.findAll({
+                where: { user_id: user_id }
+            });
+            res.json({
+                rows: result,
+                total: result.length
+            });
+        } catch (error) {
+            next(error)
+        }
+    }
     async create(req: any, res: any, next: any): Promise<any> {
         try {
             if (!req.body) throw new Error("Data is required");

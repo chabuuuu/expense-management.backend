@@ -19,7 +19,6 @@ export class BaseController implements IBaseController<any>{
         } catch (error) {
             next(error);
         }
-
     }
     async findAll(req: any, res: any, next: any): Promise<any> {
         try {

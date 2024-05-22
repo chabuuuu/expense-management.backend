@@ -12,6 +12,6 @@ categoryRouter
 .put('/:id', categoryController.update.bind(categoryController))
 .delete('/:id', categoryController.delete.bind(categoryController))
 .get('/:id', categoryController.findOne.bind(categoryController))
-.get('/', categoryController.findAll.bind(categoryController))
+.get('/', authenticateJWT, categoryController.findAll.bind(categoryController))
 
 export default categoryRouter;
