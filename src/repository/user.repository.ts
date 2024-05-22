@@ -12,6 +12,15 @@ export class UserRepository
   constructor(@inject(ITYPES.Datasource) dataSource: DataSource) {
     super(dataSource.getRepository(User));
   }
+
+  async getDetail(userId: string): Promise<any> {
+    return await this._findOne({
+      where: { id: userId },
+      relations: ["user_wallets", "transactions", "categories", "budgets"],
+    });
+  
+  }
+
   async updateDeviceToken(userId: string, deviceToken: string): Promise<any> {
     return await this._update({
       where: { id: userId },

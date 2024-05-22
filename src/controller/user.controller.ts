@@ -1,6 +1,7 @@
 import { BaseController } from "@/controller/base/base.controller";
 import { IUserController } from "@/controller/interface/i.user.controller";
 import { ChangePasswordDto } from "@/dto/user/change-password.dto";
+import { ResetPasswordDto } from "@/dto/user/forget-password.dto";
 import { UpdateDeviceTokenDto } from "@/dto/user/update-device-token.dto";
 import { UserRegisterDto } from "@/dto/user/user-register.dto";
 import { IUserService } from "@/service/interface/i.user.service";
@@ -18,6 +19,30 @@ export class UserController
     super(service);
     this.userService = service;
   }
+
+  //Reset password with otp and new password
+  async resetPassword(req: any, res: any, next: any): Promise<any> {
+    try {
+      const data : ResetPasswordDto = req.body;
+      const user_id = req.user.id;
+      const result = await this.userService.resetPasswordCallBack(data, user_id);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  //Send otp to phone number
+  async forgetPassword(req: any, res: any, next: any): Promise<any> {
+    try {
+      const user = req.user;
+      const result = await this.userService.forgetPassword(user.id);
+      res.json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
   async changePhoneNumer(req: any, res: any, next: any): Promise<any> {
     try {
     } catch (error) {
@@ -64,6 +89,7 @@ export class UserController
     try {
       const result = await this.service.findOne({
         where: { id: req.user.id },
+        relations: ["user_wallets", "transactions", "categories", "budgets"],
         order: {
           transactions: {
             transaction_date: "DESC",

@@ -1,3 +1,4 @@
+import { ResetPasswordDto } from "@/dto/user/forget-password.dto";
 import { UserRegisterDto } from "@/dto/user/user-register.dto";
 import { Wallet } from "@/models/wallet.model";
 import { IUserRepository } from "@/repository/interface/i.user.repository";
@@ -25,6 +26,59 @@ export class UserService extends BaseService implements IUserService<any> {
     super(repository);
     this.walletService = walletService;
   }
+
+  async resetPasswordCallBack(data: ResetPasswordDto, user_id: string) : Promise< any >{
+    try {
+      const inRedisToken = await redis.get(`${RedisSchema.forgetPassword}::${user_id}`);
+      if (!inRedisToken) {
+        throw new BaseError(
+          StatusCodes.BAD_REQUEST,
+          "fail",
+          "Token is expired"
+        );
+      }
+      if (inRedisToken !== data.otp_code) {
+        throw new BaseError(
+          StatusCodes.BAD_REQUEST,
+          "fail",
+          "Invalid OTP"
+        );
+      }
+      return await this.repository._update({
+        where: { id: user_id },
+        data: { password: data.new_password },
+      })
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async forgetPassword(user_id: string): Promise<any> {
+    const user = await this.repository._findOne({ where: { id: user_id } });
+    const phone_number = user.phone_number;
+    if (await redis.get(`${RedisSchema.forgetPassword}::${phone_number}`)){
+      throw new BaseError(
+        StatusCodes.BAD_REQUEST,
+        "fail",
+        "Reset password code has been sent to your phone number. Please wait for 30 seconds before sending again"
+      );
+    }
+    const randomToken = await generateRandomString();
+    const thirtySeconds = 30;
+    redis.set(
+      `${RedisSchema.forgetPassword}::${user_id}`,
+      randomToken,
+      "EX",
+      thirtySeconds
+    );
+    sendSms(`Hello from expense management!\nYour reset password code is ${randomToken}`,
+      [phone_number]
+    );
+    return {
+      message: "OTP sent! Waiting for verify phone number",
+    }
+  }
+
   async updateDeviceToken(userId: string, deviceToken: string): Promise<any> {
     return this.repository.updateDeviceToken(userId, deviceToken);
   }
@@ -141,18 +195,18 @@ export class UserService extends BaseService implements IUserService<any> {
         throw new BaseError(
           StatusCodes.BAD_REQUEST,
           "fail",
-          "Verification code has been sent to your phone number. Please wait for 5 minutes before sending again"
+          "Verification code has been sent to your phone number. Please wait for 30 seconds before sending again"
         );
       }
       const randomToken = await generateRandomString();
-      const fiveMinuteInSeconds = 60 * 5;
+      const thirtySeconds = 30;
       let nonActiveUser : any = data;
       nonActiveUser.verify_token = randomToken;
       redis.set(
         `${RedisSchema.noneActiveUserData}::${nonActiveUser.phone_number}`,
         JSON.stringify(nonActiveUser),
         "EX",
-        fiveMinuteInSeconds
+        thirtySeconds
       );
       sendSms(`Hello from expense management!\nYour verification code is ${randomToken}`,
         [data.phone_number]

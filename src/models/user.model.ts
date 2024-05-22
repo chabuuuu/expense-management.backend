@@ -39,19 +39,13 @@ export class User {
     currency_unit!: string;
 
     //FKs:
-    @OneToMany(() => User_wallet, user_wallet => user_wallet.user, {
-        eager: true
-    })
+    @OneToMany(() => User_wallet, user_wallet => user_wallet.user)
     user_wallets!: User_wallet[];
 
-    @OneToMany(() => Transactions, transactions => transactions.user, {
-        eager: true
-    })
+    @OneToMany(() => Transactions, transactions => transactions.user)
     transactions!: Transactions[];
 
-    @OneToMany(()=> Category, category => category.user, {
-        eager: true
-    })
+    @OneToMany(()=> Category, category => category.user)
     categories!: Category[];
 
     @OneToMany(()=> Budget, budget => budget.user)
