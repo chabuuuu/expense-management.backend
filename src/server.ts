@@ -45,7 +45,7 @@ if (swagger_config.enable){
 }
 
 //Worker init
-//workerService.init();
+workerService.init();
 
 //Format response
 app.use(formatResponse)
