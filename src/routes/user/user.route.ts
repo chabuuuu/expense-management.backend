@@ -1,5 +1,6 @@
 import { userController } from "@/container/user.container";
 import { ChangePasswordDto } from "@/dto/user/change-password.dto";
+import { ResetPasswordDto } from "@/dto/user/forget-password.dto";
 import { UpdateDeviceTokenDto } from "@/dto/user/update-device-token.dto";
 import { UserLoginDto } from "@/dto/user/user-login.dto";
 import { UserModifyDto } from "@/dto/user/user-modify.dto";
@@ -11,6 +12,9 @@ import express from "express";
 const userRouter = express.Router();
 
 userRouter
+
+  .post("/reset-password", authenticateJWT, classValidate(ResetPasswordDto), userController.resetPassword.bind(userController))
+  .post("/forget-password", authenticateJWT, userController.forgetPassword.bind(userController))
   .post("/login", classValidate(UserLoginDto), userController.login.bind(userController))
   .post(
     "/register",

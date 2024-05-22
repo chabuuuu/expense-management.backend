@@ -8,4 +8,6 @@ export interface IUserController<T> extends IBaseController<T>{
     changePhoneNumer(req: any, res: any, next: any) : Promise<any>
     changePassword(req: any, res: any, next: any) : Promise<any>
     updateDeviceToken(req: any, res: any, next: any) : Promise<any>
+    forgetPassword(req: any, res: any, next: any): Promise<any>
+    resetPassword(req: any, res: any, next: any): Promise<any>
 }
