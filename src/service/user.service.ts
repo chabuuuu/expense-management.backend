@@ -1,4 +1,4 @@
-import { ResetPasswordDto } from "@/dto/user/forget-password.dto";
+import { ResetPasswordDto } from "@/dto/user/reset-password.dto";
 import { UserRegisterDto } from "@/dto/user/user-register.dto";
 import { Wallet } from "@/models/wallet.model";
 import { IUserRepository } from "@/repository/interface/i.user.repository";
@@ -27,9 +27,9 @@ export class UserService extends BaseService implements IUserService<any> {
     this.walletService = walletService;
   }
 
-  async resetPasswordCallBack(data: ResetPasswordDto, user_id: string) : Promise< any >{
+  async resetPasswordCallBack(data: ResetPasswordDto) : Promise< any >{
     try {
-      const inRedisToken = await redis.get(`${RedisSchema.forgetPassword}::${user_id}`);
+      const inRedisToken = await redis.get(`${RedisSchema.forgetPassword}::${data.phone_number}`);
       if (!inRedisToken) {
         throw new BaseError(
           StatusCodes.BAD_REQUEST,
@@ -44,18 +44,27 @@ export class UserService extends BaseService implements IUserService<any> {
           "Invalid OTP"
         );
       }
-      return await this.repository._update({
-        where: { id: user_id },
+      await this.repository._update({
+        where: { phone_number: data.phone_number },
         data: { password: data.new_password },
       })
+
+      return {
+        message: "Password has been reset successfully"
+      }
     } catch (error) {
       throw error;
     }
   }
 
-  async forgetPassword(user_id: string): Promise<any> {
-    const user = await this.repository._findOne({ where: { id: user_id } });
-    const phone_number = user.phone_number;
+  async forgetPassword(phone_number: string): Promise<any> {
+    if (!await this.repository._exists({ where: { phone_number: phone_number } })){
+      throw new BaseError(
+        StatusCodes.BAD_REQUEST,
+        "fail",
+        "Phone number not found"
+      );
+    }
     if (await redis.get(`${RedisSchema.forgetPassword}::${phone_number}`)){
       throw new BaseError(
         StatusCodes.BAD_REQUEST,
@@ -66,7 +75,7 @@ export class UserService extends BaseService implements IUserService<any> {
     const randomToken = await generateRandomString();
     const thirtySeconds = 30;
     redis.set(
-      `${RedisSchema.forgetPassword}::${user_id}`,
+      `${RedisSchema.forgetPassword}::${phone_number}`,
       randomToken,
       "EX",
       thirtySeconds
