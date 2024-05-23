@@ -103,9 +103,9 @@ export class UserController
       if (!result) {
         throw new BaseError(StatusCodes.NOT_FOUND, "fail", "User not found");
       }
-      if (result.hasOwnProperty("password")) {
-        delete result.password;
-      }
+      // if (result.hasOwnProperty("password")) {
+      //   delete result.password;
+      // }
       res.json(result);
     } catch (error) {
       next(error);
