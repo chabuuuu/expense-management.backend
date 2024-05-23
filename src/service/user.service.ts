@@ -1,3 +1,4 @@
+import { twoMinutesInSec } from "@/constants/time.constant";
 import { ResetPasswordDto } from "@/dto/user/reset-password.dto";
 import { UserRegisterDto } from "@/dto/user/user-register.dto";
 import { Wallet } from "@/models/wallet.model";
@@ -34,7 +35,7 @@ export class UserService extends BaseService implements IUserService<any> {
         throw new BaseError(
           StatusCodes.BAD_REQUEST,
           "fail",
-          "Token is expired"
+          "OTP is expired"
         );
       }
       if (inRedisToken !== data.otp_code) {
@@ -69,16 +70,15 @@ export class UserService extends BaseService implements IUserService<any> {
       throw new BaseError(
         StatusCodes.BAD_REQUEST,
         "fail",
-        "Reset password code has been sent to your phone number. Please wait for 30 seconds before sending again"
+        "Reset password code has been sent to your phone number. Please wait for 2 minutes before sending again"
       );
     }
     const randomToken = await generateRandomString();
-    const thirtySeconds = 30;
     redis.set(
       `${RedisSchema.forgetPassword}::${phone_number}`,
       randomToken,
       "EX",
-      thirtySeconds
+      twoMinutesInSec
     );
     sendSms(`Hello from expense management!\nYour reset password code is ${randomToken}`,
       [phone_number]
@@ -204,18 +204,17 @@ export class UserService extends BaseService implements IUserService<any> {
         throw new BaseError(
           StatusCodes.BAD_REQUEST,
           "fail",
-          "Verification code has been sent to your phone number. Please wait for 30 seconds before sending again"
+          "Verification code has been sent to your phone number. Please wait for 2 minuets before sending again"
         );
       }
       const randomToken = await generateRandomString();
-      const thirtySeconds = 30;
       let nonActiveUser : any = data;
       nonActiveUser.verify_token = randomToken;
       redis.set(
         `${RedisSchema.noneActiveUserData}::${nonActiveUser.phone_number}`,
         JSON.stringify(nonActiveUser),
         "EX",
-        thirtySeconds
+        twoMinutesInSec
       );
       sendSms(`Hello from expense management!\nYour verification code is ${randomToken}`,
         [data.phone_number]
