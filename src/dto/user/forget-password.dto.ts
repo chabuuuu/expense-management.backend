@@ -1,12 +1,7 @@
-import { IsNotEmpty, IsString } from "class-validator";
+import { IsNotEmpty, IsPhoneNumber, IsString } from "class-validator";
 
-export class ResetPasswordDto {
-
+export class ForgetPasswordDtp {
     @IsNotEmpty()
-    @IsString()
-    new_password!: string;
-
-    @IsNotEmpty()
-    @IsString()
-    otp_code!: string;
+    @IsPhoneNumber()
+    phone_number!: string;
 }

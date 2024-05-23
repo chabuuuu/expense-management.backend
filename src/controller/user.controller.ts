@@ -1,7 +1,8 @@
 import { BaseController } from "@/controller/base/base.controller";
 import { IUserController } from "@/controller/interface/i.user.controller";
 import { ChangePasswordDto } from "@/dto/user/change-password.dto";
-import { ResetPasswordDto } from "@/dto/user/forget-password.dto";
+import { ForgetPasswordDtp } from "@/dto/user/forget-password.dto";
+import { ResetPasswordDto } from "@/dto/user/reset-password.dto";
 import { UpdateDeviceTokenDto } from "@/dto/user/update-device-token.dto";
 import { UserRegisterDto } from "@/dto/user/user-register.dto";
 import { IUserService } from "@/service/interface/i.user.service";
@@ -24,8 +25,7 @@ export class UserController
   async resetPassword(req: any, res: any, next: any): Promise<any> {
     try {
       const data : ResetPasswordDto = req.body;
-      const user_id = req.user.id;
-      const result = await this.userService.resetPasswordCallBack(data, user_id);
+      const result = await this.userService.resetPasswordCallBack(data);
       res.json(result);
     } catch (error) {
       next(error);
@@ -35,8 +35,9 @@ export class UserController
   //Send otp to phone number
   async forgetPassword(req: any, res: any, next: any): Promise<any> {
     try {
-      const user = req.user;
-      const result = await this.userService.forgetPassword(user.id);
+      const data : ForgetPasswordDtp = req.body;
+      const phone_number = data.phone_number;
+      const result = await this.userService.forgetPassword(phone_number);
       res.json(result);
     } catch (error) {
       next(error);
