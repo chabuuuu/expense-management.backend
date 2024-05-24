@@ -4,6 +4,7 @@ import { UserRegisterDto } from "@/dto/user/user-register.dto";
 import { Wallet } from "@/models/wallet.model";
 import { IUserRepository } from "@/repository/interface/i.user.repository";
 import { BaseService } from "@/service/base/base.service";
+import { ICategoryService } from "@/service/interface/i.category.service";
 import { IUserService } from "@/service/interface/i.user.service";
 import { IWalletService } from "@/service/interface/i.wallet.service";
 import { ITYPES } from "@/types/interface.types";
@@ -21,11 +22,14 @@ const jwt = require("jsonwebtoken");
 
 export class UserService extends BaseService implements IUserService<any> {
   private walletService: IWalletService<any>;
+  private categoryService: ICategoryService<any>;
   constructor(@inject(ITYPES.Repository) repository: IUserRepository<any>, 
-    @inject(SERVICE_TYPES.Wallet) walletService: IWalletService<any>
+    @inject(SERVICE_TYPES.Wallet) walletService: IWalletService<any>,
+    @inject(SERVICE_TYPES.Category) categoryService: ICategoryService<any>,
 ) {
     super(repository);
     this.walletService = walletService;
+    this.categoryService = categoryService;
   }
 
   async resetPasswordCallBack(data: ResetPasswordDto) : Promise< any >{
@@ -181,7 +185,8 @@ export class UserService extends BaseService implements IUserService<any> {
       redis.del(`${RedisSchema.noneActiveUserData}::${phone_number}`);
       
       await this.walletService.createWalletForUser(result.id, {data: null});
-
+      await this.categoryService.createDefaultCategories(result.id);
+      
       return result;
     } catch (error) {
       throw error;
