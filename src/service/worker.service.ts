@@ -276,7 +276,7 @@ export class WorkerService implements IWorkerService {
         let endDate = budget.no_renew_date!.split(" ")[1];
         let start = moment(startDate, "DD-MM-YYYY");
         let end = moment(endDate, "DD-MM-YYYY");
-        if (moment().isBetween(start, end)) {
+        if (moment().isAfter(end)) {
           await this.budgetRepository.disableBudget(budget.id);
         }
         return true;
@@ -285,7 +285,7 @@ export class WorkerService implements IWorkerService {
         let endDate_Timespan = budget.no_renew_date!.split(" ")[1];
         let start_Timespan = moment(startDate_Timespan, "DD-MM-YYYY");
         let end_Timespan = moment(endDate_Timespan, "DD-MM-YYYY");
-        if (moment().isBetween(start_Timespan, end_Timespan)) {
+        if (moment().isAfter(end_Timespan)) {
           await this.budgetRepository.disableBudget(budget.id);
         }
         return true;
